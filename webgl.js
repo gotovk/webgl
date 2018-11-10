@@ -99,3 +99,10 @@ function webglUpdate() {
     drawAvatars({avatarsCoords, avatarsTextures});
   });
 }
+
+function cycleInit() {
+  regl.frame(() => {
+    update();
+    webglUpdate();
+  });
+}

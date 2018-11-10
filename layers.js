@@ -39,8 +39,5 @@ upSVG.call(d3.zoom().on('zoom', () => {
 }));
 
 window.addEventListener('load', () => {
-  regl.frame(() => {
-    update();
-    webglUpdate();
-  });  
-})
+  loaded();
+});
