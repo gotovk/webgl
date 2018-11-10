@@ -54,7 +54,7 @@ function phyllotaxis(radius) {
   const radCoeff = 3.0;
   const innerRad = 30 * radCoeff;
   const outerRad = 100 * radCoeff;
-  const gap = 3;
+  const gap = 10;
   /*
   const rads = [1, 2, 3, 4].map(group => {
     const r = relResus[group - 1];
@@ -118,7 +118,11 @@ function phyllotaxis(radius) {
         endAngle,
       });
       let color = colors[group - 1][1 - resus];
-      enter.append('path').attr('fill', color)/*.attr('stroke', color)*/.attr('d', d);
+      enter.append('path')
+        .attr('fill', ({semaphore}) => semaphore[group - 1][resus] ? color : offColor)
+        .attr('stroke', ({semaphore}) => semaphore[group - 1][resus] ? color : offColor)
+        .attr('stroke-width', 5)
+        .attr('d', d);
     }));
     enter.attr('transform', transFun);
     s.transition().duration(10000).attr('transform', transFun);

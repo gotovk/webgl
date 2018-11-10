@@ -38,6 +38,7 @@ function drawBloodStationsCircles(sel) {
 
 function drawBloodStationsSemaphores(sel) {
   semaphores(sel, bloodStationsData.map(station => ({
+    semaphore: station.semaphore,
     cx: station.x,
     cy: station.y,
     r: 0.01,
@@ -46,6 +47,7 @@ function drawBloodStationsSemaphores(sel) {
 
 function drawBloodStationsCirclesSemaphores(sel) {
   semaphores(sel, bloodStationsData.map(station => ({
+    semaphore: station.semaphore,
     cx: station.x1,
     cy: station.y1,
     r: station.r1 / 300,
@@ -81,6 +83,10 @@ function fixTitle(title) {
   return title;
 }
 
+function toggleSemaphores(sel, state) {
+  sel.selectAll('.semaphore').attr('fill-opacity', state).attr('stroke-opacity', !state);
+}
+
 function mapInitialize() {
   const regionsOrder = mapData.map(R.prop('title'));
   mapData.forEach(item => {
@@ -95,11 +101,18 @@ function mapInitialize() {
   // console.log(mapData.map(({title, vertices}) => [title, vertices.length]));
   const mapDataByTitle = R.indexBy(item => item.title, mapData);
   const p = d3.geoAzimuthalEquidistant().rotate([-100, -54]).scale(850).translate([600, 490]);
+  const randomBool = () => Math.random() > 0.75;
   bloodStationsData.forEach(item => {
     item.region = item.city.region && item.city.region.title;
     delete item.city;
     const geoPos = [item.lng, item.lat];
     const [x, y] = p(geoPos);
+    item.semaphore = [
+      [randomBool(), randomBool()],
+      [randomBool(), randomBool()],
+      [randomBool(), randomBool()],
+      [randomBool(), randomBool()],
+    ];
     item.x = x + (Math.random() - 0.5) * 15;
     item.y = y + (Math.random() - 0.5) * 15;
   });

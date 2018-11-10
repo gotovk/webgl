@@ -23,11 +23,11 @@ function initialize() {
     .attr('width', 100).attr('height', 100);
   // lowSVGG.call(semaphore);
   upSVGG.call(drawRegions);
-  upSVGG.call(drawRegionsCircles);
+  // upSVGG.call(drawRegionsCircles);
   //  upSVGG.call(drawBloodStations);
   // upSVGG.call(drawBloodStationsCircles);
   upSVGG.call(drawBloodStationsSemaphores);
-  upSVGG.call(drawBloodStationsCirclesSemaphores);
+  // upSVGG.call(drawBloodStationsCirclesSemaphores);
   avatarsTextures = [];
   /*
   const ph = phyllotaxis(10);
@@ -63,6 +63,19 @@ window.addEventListener('load', () => {
 window.onkeydown = function(e) {
   const key = e.key;
   console.log('key', key);
+  if (key == '1') {
+    drawRegions(upSVGG);
+    drawBloodStationsSemaphores(upSVGG);
+    toggleSemaphores(upSVGG, 1);
+  } else if (key == '2') {
+    toggleSemaphores(upSVGG, 1);
+    drawBloodStationsCirclesSemaphores(upSVG);
+    drawRegionsCircles(upSVGG);
+  } else if (key == '3') {
+    toggleSemaphores(upSVGG, 0);
+    drawBloodStationsCirclesSemaphores(upSVG);
+    drawRegionsCircles(upSVGG);
+  }
 }
 
 function allLoaded() {
