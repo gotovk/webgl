@@ -54,7 +54,7 @@ function phyllotaxis(radius) {
   const radCoeff = 3.0;
   const innerRad = 30 * radCoeff;
   const outerRad = 100 * radCoeff;
-  const gap = 1;
+  const gap = 3;
   /*
   const rads = [1, 2, 3, 4].map(group => {
     const r = relResus[group - 1];
@@ -93,23 +93,35 @@ function phyllotaxis(radius) {
     return [num, resus];
   }
 
-  function semaphore(sel, radius) {
-    const arc = d3.arc().cornerRadius(3).padAngle(0.01);
+  const offColor = '#494949';
+  const colors = [
+    ['#2eb3c1', '#9fe1e9'], 
+    ['#fe5252', '#d7776c'], 
+    ['#ffdc47', '#f9fb81'], 
+    ['#54ca36', '#abe59d'],
+  ];
+
+  function semaphores(sel, data) {
+    const s = sel.selectAll('.semaphore').data(data);
+    const enter = s.enter().append('g').attr('class', 'semaphore');
+    const arc = d3.arc()
+      .cornerRadius(3)
+      .padAngle(0.03);
+    const transFun = ({cx, cy, r}) => `translate(${cx} ${cy}) scale(${r})`;
     [0, 1].forEach(resus => [1, 2, 3, 4].forEach(group => {
       const [startAngle, endAngle] = angles[group - 1];
       const [innerRadius, outerRadius] = rads[resus];
       const d = arc({
-        innerRadius,
-        outerRadius,
+        innerRadius: innerRadius,
+        outerRadius: outerRadius,
         startAngle,
         endAngle,
       });
-      let color = ['red', 'green', 'blue', 'orange'][group - 1];
-      if (resus == 0) {
-        color = d3.color(color).darker(2);
-      }
-      sel.append('path').attr('fill', 'none').attr('stroke', color).attr('d', d);
-    }))
+      let color = colors[group - 1][1 - resus];
+      enter.append('path').attr('fill', color)/*.attr('stroke', color)*/.attr('d', d);
+    }));
+    enter.attr('transform', transFun);
+    s.transition().duration(10000).attr('transform', transFun);
   }
 }
 

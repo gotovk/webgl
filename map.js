@@ -6,14 +6,14 @@ function drawRegions(sel) {
   const s = sel.selectAll('.region').data(mapData);
   const makeD = ({vertices}) => 'M' + vertices.map(([x, y]) => x + ',' + y).join('L') + 'Z';
   s.transition().duration(10000).attr('d', makeD);
-  s.enter().append('path').attr('class', 'region').attr('d', makeD).attr('fill', "black");
+  s.enter().append('path').attr('class', 'region').attr('d', makeD).attr('fill', "black").attr('stroke', 'white').attr('opacity', 0.5);
 }
 
 function drawRegionsCircles(sel) {
   const s = sel.selectAll('.region').data(regionsCirclesData);
   const makeD = ({cx, cy, r, vertCount}) => circlePath(cx, cy, r, 0, vertCount);
   s.transition().duration(10000).attr('d', makeD);
-  s.enter().append('path').attr('class', 'region').attr('d', makeD).attr('fill', "black");
+  s.enter().append('path').attr('class', 'region').attr('d', makeD).attr('fill', "black").attr('stroke', 'white').attr('opacity', 0.5);
 }
 
 function drawBloodStations(sel) {
@@ -34,6 +34,22 @@ function drawBloodStationsCircles(sel) {
     .attr('opacity', 0.5).attr('r', R.prop('r1')).attr('fill', "red")
     .attr('cx', R.prop('x1'))
     .attr('cy', R.prop('y1'));
+}
+
+function drawBloodStationsSemaphores(sel) {
+  semaphores(sel, bloodStationsData.map(station => ({
+    cx: station.x,
+    cy: station.y,
+    r: 0.01,
+  })));
+}
+
+function drawBloodStationsCirclesSemaphores(sel) {
+  semaphores(sel, bloodStationsData.map(station => ({
+    cx: station.x1,
+    cy: station.y1,
+    r: station.r1 / 300,
+  })));
 }
 
 function loadMap() {
@@ -67,6 +83,16 @@ function fixTitle(title) {
 
 function mapInitialize() {
   const regionsOrder = mapData.map(R.prop('title'));
+  mapData.forEach(item => {
+    const {title, vertices} = item;
+    const step = Math.max(1, Math.floor(vertices.length / 72));
+    const newVertices = [];
+    for (let i=0; i<vertices.length; i+=step) {
+      newVertices.push(vertices[i]);
+    };
+    item.vertices = newVertices;
+  });
+  // console.log(mapData.map(({title, vertices}) => [title, vertices.length]));
   const mapDataByTitle = R.indexBy(item => item.title, mapData);
   const p = d3.geoAzimuthalEquidistant().rotate([-100, -54]).scale(850).translate([600, 490]);
   bloodStationsData.forEach(item => {
@@ -126,6 +152,7 @@ function mapInitialize() {
       }
     });
   });
+  bloodStationsData = bloodStationsData.filter(({r1}) => r1 > 0);
   /*
   bloodStationsData.forEach(station => {
     const { region } = station;
