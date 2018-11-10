@@ -31,9 +31,9 @@ function drawBloodStationsCircles(sel) {
     .attr('cy', R.prop('y1'))
     .attr('r', R.prop('r1'));
   s.enter().append('circle').attr('class', 'station')
-    .attr('opacity', 0.5).attr('r', 1).attr('fill', "red")
-    .attr('cx', R.prop('x'))
-    .attr('cy', R.prop('y'));
+    .attr('opacity', 0.5).attr('r', R.prop('r1')).attr('fill', "red")
+    .attr('cx', R.prop('x1'))
+    .attr('cy', R.prop('y1'));
 }
 
 function loadMap() {
@@ -94,8 +94,33 @@ function mapInitialize() {
     title = fixTitle(title);
     const {cx, cy, dx, dy, r} = regionsCirclesData[title];
     const sc = 1.92951;
-    return {cx: cx + dx / sc, cy: cy + dy / sc, r, title, vertCount};
+    const population = r * r * 100;
+    return {cx: cx + dx / sc, cy: cy + dy / sc, r, title, vertCount, population};
   });
+  regionsCirclesData.forEach(item => {
+    const { title, r: regionR, cx, cy } = item;
+    const bloodStations = bloodStationsData.filter(R.propEq('region', title));
+    bloodStations.forEach(station => {
+      station.population = 1 + Math.random() * 5;
+    });
+    if (bloodStations.length === 0) {
+      return;
+    }
+    const pack = d3.pack()
+      .size([100, 100])
+      .padding(3);
+    const hierarchy = d3.hierarchy({
+      children: bloodStations,
+    }).sum(R.prop('population')).sort(function(a, b) { return b.population - a.population; });
+    pack(hierarchy);
+    console.log(hierarchy);
+    hierarchy.children.forEach(({x, y, r, data}) => {
+      data.x1 = cx + (x - 50) / 50 * regionR;
+      data.y1 = cy + (y - 50) / 50 * regionR;
+      data.r1 = r / 50 * regionR;
+    });
+  });
+  /*
   bloodStationsData.forEach(station => {
     const { region } = station;
     const circlesData = regionsCirclesData[regionsOrder.indexOf(region)];
@@ -103,4 +128,5 @@ function mapInitialize() {
     station.y1 = circlesData.cy + random() * circlesData.r * 0.5;
     station.r1 = 2;
   });
+  */
 }
