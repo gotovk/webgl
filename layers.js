@@ -36,6 +36,7 @@ let transform = d3.zoomIdentity;
 
 upSVG.call(d3.zoom().on('zoom', () => {
   transform = d3.event.transform;
+  webglNeedsUpdate = true;
 }));
 
 window.addEventListener('load', () => {

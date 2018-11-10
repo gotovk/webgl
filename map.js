@@ -91,7 +91,7 @@ function mapInitialize() {
   const regionsOrder = mapData.map(R.prop('title'));
   mapData.forEach(item => {
     const {title, vertices} = item;
-    const step = Math.max(1, Math.floor(vertices.length / 72));
+    const step = Math.max(1, Math.floor(vertices.length / 142));
     const newVertices = [];
     for (let i=0; i<vertices.length; i+=step) {
       newVertices.push(vertices[i]);

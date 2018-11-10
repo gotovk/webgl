@@ -1,3 +1,6 @@
+let webglEnabled = false;
+let webglNeedsUpdate = true;
+
 const dpi = window.devicePixelRatio;
 
 webglCanvas.style.width = width;
@@ -95,10 +98,42 @@ function makeDrawAvatars(avatars) {
   });
 }
 
-function webglUpdate() {
-  setupCamera2d({}, () => {
-    drawAvatars({avatarsCoords, avatarsTextures});
+let usersData = null;
+
+function generateUsers() {
+  usersData = [];
+  avatarsCoords = [];
+  bloodStationsData.forEach(({r1, x1, y1, r1steps}) => {
+    const pattern = patterns[{0.5: '0.5', 0.75: '0.75', 1.0: '1.0', 1.25: '1.25', 1.5: '1.5', 1.75: '1.75', 2.0: '2.0', 2.25: '2.25', 2.5: '2.5', 2.75: '2.75', 3.0: '3.0'}[r1steps]];
+    const coeff = 1 / r1steps * 3;
+    const coeff2 = 1 / 20;
+    pattern.forEach(([x, y, r]) => {
+      // inverseGroup([x * coeff, y * coeff, r * coeff]);
+      avatarsCoords.push([x1 + x * coeff2, y1 + y * coeff2, r * coeff2]);
+    });
   });
+  console.log(avatarsCoords.length);
+  const avatarsTexturesBank = d3.range(36).map(i => {
+    const row = i % 16;
+    const col = Math.floor(i / 16);
+    return [row / 16, col / 12, 1 / 16];
+  });
+  avatarsTextures = [];
+  for (let i=0; i<30000; i++) {
+    avatarsTextures.push(avatarsTexturesBank[Math.floor(Math.random() * avatarsTexturesBank.length)]);
+  }
+}
+
+function webglUpdate() {
+  if (webglEnabled) {
+    if (webglNeedsUpdate) {
+      console.log('webgl redraw', avatarsCoords);
+      setupCamera2d({}, () => {
+        drawAvatars({avatarsCoords, avatarsTextures});
+      });
+      webglNeedsUpdate = false;  
+    }
+  }
 }
 
 function cycleInit() {
