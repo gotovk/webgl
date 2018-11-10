@@ -22,9 +22,9 @@ function initialize() {
     .attr('x', 10).attr('y', 10)
     .attr('width', 100).attr('height', 100);
   // lowSVGG.call(semaphore);
-  upSVGG.call(drawRegions);
+  // upSVGG.call(drawRegions);
   upSVGG.call(drawRegionsCircles);
-  upSVGG.call(drawBloodStations);
+  // upSVGG.call(drawBloodStations);
   upSVGG.call(drawBloodStationsCircles);
   avatarsTextures = [];
   /*

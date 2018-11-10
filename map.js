@@ -67,7 +67,6 @@ function fixTitle(title) {
 
 function mapInitialize() {
   const regionsOrder = mapData.map(R.prop('title'));
-  console.log(regionsOrder);
   const mapDataByTitle = R.indexBy(item => item.title, mapData);
   const p = d3.geoAzimuthalEquidistant().rotate([-100, -54]).scale(850).translate([600, 490]);
   bloodStationsData.forEach(item => {
@@ -113,11 +112,18 @@ function mapInitialize() {
       children: bloodStations,
     }).sum(R.prop('population')).sort(function(a, b) { return b.population - a.population; });
     pack(hierarchy);
-    console.log(hierarchy);
+    const radStep = 5;
     hierarchy.children.forEach(({x, y, r, data}) => {
       data.x1 = cx + (x - 50) / 50 * regionR;
       data.y1 = cy + (y - 50) / 50 * regionR;
-      data.r1 = r / 50 * regionR;
+      const r1 = r / 50 * regionR;
+      if (r1 < radStep / 2) {
+        data.r1 = 0;
+      } else {
+        const steps = Math.min(3, Math.floor(r1 / radStep * 4) / 4);
+        data.r1 = steps * radStep;
+        data.r1steps = steps;
+      }
     });
   });
   /*
