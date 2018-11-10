@@ -5,6 +5,9 @@ webglCanvas.style.height = height;
 webglCanvas.width = Math.round(width * dpi);
 webglCanvas.height = Math.round(height * dpi);
 
+let avatarsCoords = [];
+let avatarsTextures = [];
+
 let drawAvatars = () => {};
 
 const avatars = new Image();
@@ -64,12 +67,13 @@ function makeDrawAvatars(avatars) {
       }`,
 
     attributes: {
-      position: [[10, 10, 100], [110, 10, 100], [10, 110, 100]],
-      textureCoords: [
+      position: regl.prop('avatarsCoords'),
+      textureCoords: regl.prop('avatarsTextures'),
+      /*[
         [0, 0 / 12, 1 / 16],
         [0, 1 / 12, 1 / 16],
         [0, 2 / 12, 1 / 16],
-      ],
+      ],*/
     },
 
     uniforms: {
@@ -81,16 +85,17 @@ function makeDrawAvatars(avatars) {
     },
   
     primitive: 'points',
-    count: 3,
+    count: (ctx, props) => props.avatarsCoords.length,
   });
 }
 
 avatars.onload = function() {
   drawAvatars = makeDrawAvatars(avatars);
+  loaded();
 }
 
 function webglUpdate() {
   setupCamera2d({}, () => {
-    drawAvatars()
+    drawAvatars({avatarsCoords, avatarsTextures});
   });
 }
