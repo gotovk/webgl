@@ -24,7 +24,9 @@ function initialize() {
   // lowSVGG.call(semaphore);
   // upSVGG.call(drawRegionsCircles);
   upSVGG.call(drawRegions);
+  upSVGG.call(drawRegionsCircles);
   upSVGG.call(drawBloodStations);
+  upSVGG.call(drawBloodStationsCircles);
   avatarsTextures = [];
   /*
   const ph = phyllotaxis(10);

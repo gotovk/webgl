@@ -5,22 +5,35 @@ let regionsCirclesData = null;
 function drawRegions(sel) {
   const s = sel.selectAll('.region').data(mapData);
   const makeD = ({vertices}) => 'M' + vertices.map(([x, y]) => x + ',' + y).join('L') + 'Z';
+  s.transition().duration(10000).attr('d', makeD);
   s.enter().append('path').attr('class', 'region').attr('d', makeD).attr('fill', "black");
 }
 
 function drawRegionsCircles(sel) {
   const s = sel.selectAll('.region').data(regionsCirclesData);
-  const makeD = ({cx, cy, r}) => circlePath(cx, cy, r, 0, 72);
+  const makeD = ({cx, cy, r, vertCount}) => circlePath(cx, cy, r, 0, vertCount);
+  s.transition().duration(10000).attr('d', makeD);
   s.enter().append('path').attr('class', 'region').attr('d', makeD).attr('fill', "black");
 }
 
 function drawBloodStations(sel) {
   const s = sel.selectAll('.station').data(bloodStationsData);
-  const p = d3.geoAzimuthalEquidistant().rotate([-100, -54]).scale(900).translate([620, 500]);
   s.enter().append('circle').attr('class', 'station')
     .attr('opacity', 0.5).attr('r', 1).attr('fill', "red")
-    .attr('cx', ({lat, lng}) => p([lng, lat])[0] + (Math.random() - 0.5) * 15)
-    .attr('cy', ({lat, lng}) => p([lng, lat])[1] + (Math.random() - 0.5) * 15);
+    .attr('cx', R.prop('x'))
+    .attr('cy', R.prop('y'));
+}
+
+function drawBloodStationsCircles(sel) {
+  const s = sel.selectAll('.station').data(bloodStationsData);
+  s.transition().duration(10000)
+    .attr('cx', R.prop('x1'))
+    .attr('cy', R.prop('y1'))
+    .attr('r', R.prop('r1'));
+  s.enter().append('circle').attr('class', 'station')
+    .attr('opacity', 0.5).attr('r', 1).attr('fill', "red")
+    .attr('cx', R.prop('x'))
+    .attr('cy', R.prop('y'));
 }
 
 function loadMap() {
@@ -40,7 +53,6 @@ function loadMap() {
     regionsCirclesData = data;
     loaded();
   });
-  
 }
 
 function fixTitle(title) {
@@ -54,17 +66,41 @@ function fixTitle(title) {
 }
 
 function mapInitialize() {
+  const regionsOrder = mapData.map(R.prop('title'));
+  console.log(regionsOrder);
   const mapDataByTitle = R.indexBy(item => item.title, mapData);
+  const p = d3.geoAzimuthalEquidistant().rotate([-100, -54]).scale(850).translate([600, 490]);
   bloodStationsData.forEach(item => {
     item.region = item.city.region && item.city.region.title;
-    if ((item.region in mapDataByTitle)) {
-      // console.log('IN', item.region);
-    }
     delete item.city;
+    const geoPos = [item.lng, item.lat];
+    const [x, y] = p(geoPos);
+    item.x = x + (Math.random() - 0.5) * 15;
+    item.y = y + (Math.random() - 0.5) * 15;
+  });
+  bloodStationsData = bloodStationsData.filter(item => {
+    const {x, y} = item;
+    let found = null;
+    mapData.forEach(({title, vertices}) => {
+      if (d3.polygonContains(vertices, [x, y])) {
+        found = title;
+      }
+    });
+    item.region = found;
+    return found;
   });
   regionsCirclesData = mapData.map(({title}) => {
-    const {cx, cy, dx, dy, r} = regionsCirclesData[fixTitle(title)];
+    const vertCount = mapDataByTitle[title].vertices.length;
+    title = fixTitle(title);
+    const {cx, cy, dx, dy, r} = regionsCirclesData[title];
     const sc = 1.92951;
-    return {cx: cx + dx / sc, cy: cy + dy / sc, r, title};
+    return {cx: cx + dx / sc, cy: cy + dy / sc, r, title, vertCount};
+  });
+  bloodStationsData.forEach(station => {
+    const { region } = station;
+    const circlesData = regionsCirclesData[regionsOrder.indexOf(region)];
+    station.x1 = circlesData.cx + random() * circlesData.r * 0.5;
+    station.y1 = circlesData.cy + random() * circlesData.r * 0.5;
+    station.r1 = 2;
   });
 }
