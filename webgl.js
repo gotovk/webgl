@@ -10,10 +10,16 @@ let avatarsTextures = [];
 
 let drawAvatars = () => {};
 
-const avatars = new Image();
-avatars.crossOrigin = "Anonymous";
-avatars.src = 'https://i.imgur.com/EaxS9EB.jpg';
-// avatars.src = './avatars/comp1.jpg';
+window.addEventListener('load', () => {
+  const avatars = new Image();
+  avatars.crossOrigin = "Anonymous";
+  avatars.src = 'https://i.imgur.com/EaxS9EB.jpg';
+  // avatars.src = './avatars/comp1.jpg';
+  avatars.onload = function() {
+    drawAvatars = makeDrawAvatars(avatars);
+    loaded();
+  }  
+})
 
 const setupCamera2d = regl({
   uniforms: {
@@ -87,11 +93,6 @@ function makeDrawAvatars(avatars) {
     primitive: 'points',
     count: (ctx, props) => props.avatarsCoords.length,
   });
-}
-
-avatars.onload = function() {
-  drawAvatars = makeDrawAvatars(avatars);
-  loaded();
 }
 
 function webglUpdate() {
