@@ -41,7 +41,7 @@ rightPanel.style.top = '0px';
 rightPanel.style.bottom = '0px';
 rightPanel.style.right = '0px';
 rightPanel.style.width = '400px';
-rightPanel.style.display = 'block';
+rightPanel.style.display = 'none';
 rightPanel.style.background = 'rgba(0, 0, 0, 0.5)';
 rightPanel.style.color = 'white';
 rightPanel.style.padding = '15px';
@@ -115,7 +115,7 @@ const semaphoreBlood = [
 function updatePanel(stationNo) {
   const station = bloodStationsData[stationNo];
   const { semaphore, r1 } = station;
-  rightPanel.style.display = 'block';
+  // rightPanel.style.display = 'block';
   let html = `<div style="font-size: 25px; margin-top: 0px; margin-bottom: 15px">Пункт сдачи крови №${stationNo}</div>`;
   semaphoreBlood.forEach(([num, resus]) => {
     const numNo = {'I': 0, 'II': 1, 'III': 2, 'IV': 3}[num];

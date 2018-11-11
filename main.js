@@ -102,7 +102,7 @@ window.onkeydown = function(e) {
   } else if (key == '3') {
     peopleClick(1);
   } else if (key == '4') {
-    rightPanel.style.display = 'none';
+    rightPanel.style.display = rightPanel.style.display === 'none' ? 'block' : 'none';
   }
 }
 
