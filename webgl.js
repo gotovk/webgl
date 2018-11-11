@@ -10,6 +10,7 @@ webglCanvas.height = Math.round(height * dpi);
 
 let avatarsCoords = [];
 let avatarsTextures = [];
+let edgesCoords = [];
 
 let drawAvatars = () => {};
 
@@ -49,7 +50,7 @@ function makeDrawAvatars(avatars) {
         if (d > 0.5) {
           discard;
         } else if ((0.5 - d) / 0.5 < 0.04) {
-          gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
+          gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);
           return;
         }
         float tx0 = v_textureCoords.x;
@@ -98,6 +99,48 @@ function makeDrawAvatars(avatars) {
   });
 }
 
+const drawEdges = regl({
+  frag: `
+    precision mediump float;
+    void main() {
+      gl_FragColor = vec4(0.5, 0.5, 1.0, 0.5);
+    }`,
+
+  vert: `
+    precision mediump float;
+    attribute vec2 coords;
+    uniform float dpi;
+    uniform vec3 cam;
+    uniform vec2 screen;
+    void main() {
+      vec2 pos = vec2((cam.x + coords.x * cam.z) / screen.x * 2.0 - 1.0, 1.0 - (cam.y + coords.y * cam.z) / screen.y * 2.0);
+      gl_Position = vec4(pos, 0.5, 1.0);
+    }`,
+
+  lineWidth: 2,
+
+  blend: {
+    func: {
+      srcRGB: 'src alpha',
+      dstRGB: 1,
+      srcAlpha: 'src alpha',
+      dstAlpha: 1,
+    },
+    equation: {
+      rgb: 'add',
+      alpha: 'add'
+    },
+    enable: true,
+  },
+
+  attributes: {
+    coords: regl.prop('coords'),
+  },
+
+  primitive: 'lines',
+  count: (ctx, props) => props.coords.length * 2,
+});
+
 let usersData = null;
 
 function generateUsers() {
@@ -112,7 +155,47 @@ function generateUsers() {
       avatarsCoords.push([x1 + x * coeff2, y1 + y * coeff2, r * coeff2]);
     });
   });
-  console.log(avatarsCoords.length);
+  edgesCoords = [];
+  for (let i=0; i<avatarsCoords.length-1; i++) {
+    const source = avatarsCoords[i].slice(0, 2);
+    const target = avatarsCoords[i+1].slice(0, 2);
+    const dist = Math.sqrt(Math.pow(source[0] - target[0], 2) + Math.pow(source[1] - target[1], 2));
+    if (dist < 100) {
+      let prob;
+      if (dist < 3) {
+        prob = 0.3;
+      } else if (dist < 10) {
+        prob = 0.3; // 0.5;
+      } else if (dist < 100) {
+        prob = 0.05; // 1;
+      } else {
+        prob = 0;
+      }
+      if (Math.random() < prob) {
+        edgesCoords.push([source, target]);
+      }
+    }
+  }
+  for (let i=0; i<avatarsCoords.length-1; i++) {
+    const source = avatarsCoords[i].slice(0, 2);
+    const target = avatarsCoords[Math.floor(Math.random() * avatarsCoords.length)].slice(0, 2);
+    const dist = Math.sqrt(Math.pow(source[0] - target[0], 2) + Math.pow(source[1] - target[1], 2));
+    let prob;
+    if (dist > 100) {
+      prob = 0.00;
+    } else if (dist > 50) {
+      prob = 0.1;
+    } else if (dist > 5) {
+      prob = 0.0;
+    } else if (dist > 1) {
+      prob = 0.0;
+    } else {
+      prob = 0.0;
+    }
+    if (Math.random() < prob) {
+      edgesCoords.push([source, target]);
+    }
+  }
   const avatarsTexturesBank = d3.range(36).map(i => {
     const row = i % 16;
     const col = Math.floor(i / 16);
@@ -130,6 +213,7 @@ function webglUpdate() {
       console.log('webgl redraw', avatarsCoords);
       setupCamera2d({}, () => {
         drawAvatars({avatarsCoords, avatarsTextures});
+        drawEdges({coords: edgesCoords});
       });
       webglNeedsUpdate = false;  
     }
