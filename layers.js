@@ -63,6 +63,7 @@ let currentMode = 0;
 
 function mapClick(long) {
   if (currentMode == 2) return;
+  layer1.setAttribute('visibility', 'hidden');
   transitionDuration = long ? 5000 : 1000;
   upSVGButtons.select('#selRect').transition().duration(transitionDuration).attr('x', (lWidth - btnPanelW) / 2);
   drawRegions(lowSVGG);
@@ -75,6 +76,7 @@ function mapClick(long) {
 
 function centersClick(long) {
   transitionDuration = long ? 5000 : 1000;
+  layer1.setAttribute('visibility', 'hidden');
   upSVGButtons.select('#selRect').transition().duration(currentMode == 2 ? 100 : transitionDuration).attr('x', (lWidth - btnPanelW) / 2 + btnPanelW / 3);
   drawRegionsCircles(lowSVGG);
   toggleSemaphores(upSVGG, 1);
@@ -86,6 +88,7 @@ function centersClick(long) {
 
 function peopleClick(long) {
   if (currentMode == 0) return;
+  layer1.setAttribute('visibility', 'hidden');
   transitionDuration = long ? 5000 : 1000;
   upSVGButtons.select('#selRect').transition().duration(100).attr('x', (lWidth - btnPanelW) / 2 + 2 * btnPanelW / 3);
   toggleSemaphores(upSVGG, 0);

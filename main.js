@@ -32,9 +32,18 @@ function showLegend(stationNo) {
 }
 
 function initialize() {
-  lowSVGG.append('rect').attr('fill', 'none')
-    .attr('x', 10).attr('y', 10)
-    .attr('width', 100).attr('height', 100);
+  lowSVGG.selectAll(".tp").data(regionsCirclesData).enter().append('path')
+      .attr("id", ({title}) => 'tp_' + title)
+      .attr("d", ({cx, cy, r}) => {
+        return `M${cx-r-4},${cy + 0.1}A${r + 4},${r + 4},0,1,0,${cx-r-4},${cy - 0.1}`
+      }).attr('stroke', 'none').attr('fill', 'none');
+  lowSVGG.selectAll('.regText').data(regionsCirclesData).enter().append('text')
+      .attr("font-size", "4px")
+      .attr("font-family", "Arial")
+      .attr('fill', 'white')
+      .append("textPath")
+        .attr("xlink:href", ({title}) => "#tp_" + title)
+        .text(({title}) => title);
   // lowSVGG.call(semaphore);
   lowSVGG.call(drawRegions);
   // upSVGG.call(drawRegionsCircles);
