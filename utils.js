@@ -30,6 +30,14 @@ function phyllotaxis(radius) {
   };
 }
 
+const bloodOffColor = '#494949';
+const bloodColors = [
+  ['#2eb3c1', '#9fe1e9'], 
+  ['#fe5252', '#d7776c'], 
+  ['#ffdc47', '#f9fb81'], 
+  ['#54ca36', '#abe59d'],
+];
+
 {
   const stats = [
     [40, 7], // I
@@ -93,14 +101,6 @@ function phyllotaxis(radius) {
     return [num, resus];
   }
 
-  const offColor = '#494949';
-  const colors = [
-    ['#2eb3c1', '#9fe1e9'], 
-    ['#fe5252', '#d7776c'], 
-    ['#ffdc47', '#f9fb81'], 
-    ['#54ca36', '#abe59d'],
-  ];
-
   function semaphores(sel, data) {
     const s = sel.selectAll('.semaphore').data(data);
     const enter = s.enter().append('g').attr('class', 'semaphore');
@@ -117,14 +117,15 @@ function phyllotaxis(radius) {
         startAngle,
         endAngle,
       });
-      let color = colors[group - 1][1 - resus];
+      let color = bloodColors[group - 1][1 - resus];
       enter.append('path')
-        .attr('fill', ({semaphore}) => semaphore[group - 1][resus] ? color : offColor)
-        .attr('stroke', ({semaphore}) => semaphore[group - 1][resus] ? color : offColor)
+        .attr('fill', ({semaphore}) => semaphore[group - 1][resus] ? color : bloodOffColor)
+        .attr('stroke', ({semaphore}) => semaphore[group - 1][resus] ? color : bloodOffColor)
         .attr('stroke-width', 5)
         .attr('d', d);
     }));
     enter.attr('transform', transFun);
+    enter.on('mouseover', ({no}) => updatePanel(no));
     s.transition().duration(10000).attr('transform', transFun);
   }
 }

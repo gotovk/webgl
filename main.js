@@ -62,15 +62,18 @@ window.onkeydown = function(e) {
     drawBloodStationsSemaphores(upSVGG);
     toggleSemaphores(upSVGG, 1);
     webglEnabled = false;
+    webglCanvas.style.display = 'none';
   } else if (key == '2') {
     drawRegionsCircles(lowSVGG);
     toggleSemaphores(upSVGG, 1);
     drawBloodStationsCirclesSemaphores(upSVG);
+    webglCanvas.style.display = 'none';
     webglEnabled = false;
   } else if (key == '3') {
     toggleSemaphores(upSVGG, 0);
     webglEnabled = true;
     webglNeedsUpdate = true;
+    webglCanvas.style.display = 'block';
     // drawBloodStationsCirclesSemaphores(upSVG);
     // drawRegionsCircles(upSVGG);
   }
