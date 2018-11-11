@@ -58,7 +58,7 @@ function updatePanel(stationNo) {
     const resusNo = {'+': 0, '-': 1}[resus];
     const color = bloodColors[numNo][resusNo];
     html += `<div style="text-baseline: middle; line-height: 2; height: 50px;"><div style="text-align: right; padding-right: 15px; display: inline-block; width: 70px; font-size: 25px; color: ${color}">
-      ${num}${resus}
+      ${num}${resus == '+' ? '+' : '−'}
     </div>`;
     html += `<div style="display: inline-block; font-size: 25px; margin-top: 15px">`
     if (semaphore[numNo][resusNo]) {
@@ -69,7 +69,12 @@ function updatePanel(stationNo) {
     html += `</div></div>`;
   });
   html += '<div style="margin-left: 85px">';
-  html += `<input type="button" value="Задать вопрос на форуме" style="margin-top: 60px; width: 300px; cursor: pointer; background: green; display: block; padding: 5px; font-weight: bold; color: white; border: none; border-radius: 5px">`;
+  if (Math.random() > 0.5) {
+    html += `<input type="button" value="Не знаете свою группу крови? Вы все равно можете сдать кровь здесь" style="margin-top: 30px; width: 300px; cursor: pointer; white-space: normal; background: green; display: block; padding: 5px; font-weight: bold; color: white; border: none; border-radius: 5px">`;
+  }
+  html += '</div>';
+  html += '<div style="margin-left: 85px">';
+  html += `<input type="button" value="Задать вопрос на форуме" style="margin-top: 30px; width: 300px; cursor: pointer; background: green; display: block; padding: 5px; font-weight: bold; color: white; border: none; border-radius: 5px">`;
   html += '<div style="margin: 10px; font-size: 15px; color: lightgreen">';
   html += `Вступайте в сообщество доноров центра сдачи крови №${stationNo}. Нас уже ${Math.round(r1 * r1)}!`;
   html += '</div>';
