@@ -37,8 +37,9 @@ function initialize() {
       .attr("d", ({cx, cy, r}) => {
         return `M${cx-r-4},${cy + 0.1}A${r + 4},${r + 4},0,1,0,${cx-r-4},${cy - 0.1}`
       }).attr('stroke', 'none').attr('fill', 'none');
-  lowSVGG.selectAll('.regText').data(regionsCirclesData).enter().append('text')
-      .attr("font-size", "4px")
+  lowSVGG.selectAll('.regText').data(regionsCirclesData).enter().append('text').attr('class', 'regText')
+    .attr("visibility", "hidden")
+    .attr("font-size", "4px")
       .attr("font-family", "Arial")
       .attr('fill', 'white')
       .append("textPath")
