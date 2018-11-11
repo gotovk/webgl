@@ -49,7 +49,8 @@ function drawBloodStationsSemaphores(sel) {
 }
 
 function drawBloodStationsCirclesSemaphores(sel) {
-  semaphores(sel, bloodStationsData.map(station => ({
+  semaphores(sel, bloodStationsData.map((station, no) => ({
+    no,
     semaphore: station.semaphore,
     cx: station.x1,
     cy: station.y1,

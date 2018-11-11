@@ -125,7 +125,10 @@ const bloodColors = [
         .attr('d', d);
     }));
     enter.attr('transform', transFun);
-    enter.on('mouseover', ({no}) => updatePanel(no));
+    enter.on('mouseover', ({no}) => {
+      updatePanel(no);
+      showLegend(no);
+    });
     s.transition().duration(transitionDuration).attr('transform', transFun);
   }
 }

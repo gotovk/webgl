@@ -20,6 +20,15 @@ function makeSVG() {
   return sel;
 }
 
+let legend = null;
+
+window.addEventListener('load', () => {
+  d3.svg('https://gist.githubusercontent.com/pallada-92/bd8427633c22c032d3755e632597a99b/raw/9255875442eac7a23a6e426836fba510431f10c7/legend_export.svg').then(svg => {
+    legend = svg.documentElement;
+    loaded();
+  });
+})
+
 const lowSVG = makeSVG();
 const lowSVGG = lowSVG.append('g');
 const webglCanvas = document.createElement('canvas');

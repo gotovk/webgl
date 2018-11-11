@@ -1,4 +1,4 @@
-let loadCount = 3;
+let loadCount = 4;
 
 let gephiNoverlap = [];
 
@@ -11,6 +11,26 @@ function mod(x, m) {
   return ((x % m) + m) % m;
 }
 
+let layer1 = null;
+// 'translate(0 -191.17)';
+
+function showLegend(stationNo) {
+  let x, y, r;
+  if (currentMode === 0) {
+    x = bloodStationsData[stationNo].x;
+    y = bloodStationsData[stationNo].y;
+    r = 1.7;
+  } else {
+    x = bloodStationsData[stationNo].x1;
+    y = bloodStationsData[stationNo].y1;
+    r = bloodStationsData[stationNo].r1 * 0.6;
+  }
+  layer1.setAttribute('visibility', 'visible');
+  layer1.style.pointerEvents = 'none';
+  layer1.setAttribute('transform', `translate(${x}, ${y}) scale(${r / 15}) translate(-52 -245)`); // translate(${x1}, ${y1}) translate(50 50)`);
+  // layer1.setAttribute('transform', `translate(0 -191.17)  scale(${r1 / 10}) translate(${x1}, ${y1}) translate(50 50)`);
+}
+
 function initialize() {
   lowSVGG.append('rect').attr('fill', 'none')
     .attr('x', 10).attr('y', 10)
@@ -21,6 +41,14 @@ function initialize() {
   //  upSVGG.call(drawBloodStations);
   // upSVGG.call(drawBloodStationsCircles);
   upSVGG.call(drawBloodStationsSemaphores);
+  // legend.setAttribute('id', 'legend');
+  // upSVG.select('#legend').style('visibility', 'hidden');
+  // legend.setAttribute('id', 'legend');
+  // legend.style.visibility = 'hidden';
+  // d3.select(legend).select('g').attr('transform', 'translate(1, 1)');
+  layer1 = legend.getElementById('layer1');
+  upSVGG.node().appendChild(layer1);
+  layer1.setAttribute('visibility', 'hidden');
   // upSVGG.call(drawBloodStationsCirclesSemaphores);
   // avatarsTextures = [];
   /*
