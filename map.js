@@ -2,17 +2,19 @@ let mapData = null;
 let bloodStationsData = null;
 let regionsCirclesData = null;
 
+let transitionDuration = 2000;
+
 function drawRegions(sel) {
   const s = sel.selectAll('.region').data(mapData);
   const makeD = ({vertices}) => 'M' + vertices.map(([x, y]) => x + ',' + y).join('L') + 'Z';
-  s.transition().duration(10000).attr('d', makeD);
+  s.transition().duration(transitionDuration).attr('d', makeD);
   s.enter().append('path').attr('class', 'region').attr('d', makeD).attr('fill', "black").attr('stroke', 'white').attr('opacity', 0.5);
 }
 
 function drawRegionsCircles(sel) {
   const s = sel.selectAll('.region').data(regionsCirclesData);
   const makeD = ({cx, cy, r, vertCount}) => circlePath(cx, cy, r, 0, vertCount);
-  s.transition().duration(10000).attr('d', makeD);
+  s.transition().duration(transitionDuration).attr('d', makeD);
   s.enter().append('path').attr('class', 'region').attr('d', makeD).attr('fill', "black").attr('stroke', 'white').attr('opacity', 0.5);
 }
 
@@ -26,7 +28,7 @@ function drawBloodStations(sel) {
 
 function drawBloodStationsCircles(sel) {
   const s = sel.selectAll('.station').data(bloodStationsData);
-  s.transition().duration(10000)
+  s.transition().duration(transitionDuration)
     .attr('cx', R.prop('x1'))
     .attr('cy', R.prop('y1'))
     .attr('r', R.prop('r1'));

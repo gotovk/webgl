@@ -126,7 +126,7 @@ const bloodColors = [
     }));
     enter.attr('transform', transFun);
     enter.on('mouseover', ({no}) => updatePanel(no));
-    s.transition().duration(10000).attr('transform', transFun);
+    s.transition().duration(transitionDuration).attr('transform', transFun);
   }
 }
 

@@ -58,24 +58,13 @@ window.onkeydown = function(e) {
   const key = e.key;
   console.log('key', key);
   if (key == '1') {
-    drawRegions(lowSVGG);
-    drawBloodStationsSemaphores(upSVGG);
-    toggleSemaphores(upSVGG, 1);
-    webglEnabled = false;
-    webglCanvas.style.display = 'none';
+    mapClick(1);
   } else if (key == '2') {
-    drawRegionsCircles(lowSVGG);
-    toggleSemaphores(upSVGG, 1);
-    drawBloodStationsCirclesSemaphores(upSVG);
-    webglCanvas.style.display = 'none';
-    webglEnabled = false;
+    centersClick(1);
   } else if (key == '3') {
-    toggleSemaphores(upSVGG, 0);
-    webglEnabled = true;
-    webglNeedsUpdate = true;
-    webglCanvas.style.display = 'block';
-    // drawBloodStationsCirclesSemaphores(upSVG);
-    // drawRegionsCircles(upSVGG);
+    peopleClick(1);
+  } else if (key == '4') {
+    rightPanel.style.display = 'none';
   }
 }
 

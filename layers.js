@@ -25,6 +25,7 @@ const lowSVGG = lowSVG.append('g');
 const webglCanvas = document.createElement('canvas');
 const upSVG = makeSVG();
 const upSVGG = upSVG.append('g');
+const upSVGButtons = upSVG.append('g').attr('font-family', 'Arial').attr('font-size', '20px').attr('fill', 'white').attr('font-weight', 'bold').attr('text-anchor', 'middle');
 const rightPanel = document.createElement('div');
 rightPanel.style.position = 'absolute';
 rightPanel.style.top = '0px';
@@ -36,6 +37,54 @@ rightPanel.style.background = 'rgba(0, 0, 0, 0.5)';
 rightPanel.style.color = 'white';
 rightPanel.style.padding = '15px';
 rightPanel.style.fontFamily = 'Arial';
+
+const lWidth = innerWidth - 430;
+const rel = 1 / 4;
+const btnPanelW = lWidth * 0.75;
+const btnPanelH = 40;
+const btnPanelR = 8;
+const btnPanelBL = 37;
+upSVGButtons.append('rect').attr('width', btnPanelW).attr('x', (lWidth - btnPanelW) / 2).attr('y', 10).attr('height', btnPanelH).attr('fill', 'rgba(0, 0, 0, 0.5)').attr('rx', btnPanelR).attr('ry', btnPanelR);
+upSVGButtons.append('rect').attr('id', 'selRect').attr('width', btnPanelW / 3).attr('x', (lWidth - btnPanelW) / 2).attr('y', 10).attr('height', btnPanelH).attr('fill', 'rgba(0, 0, 0, 1)').attr('stroke', 'blue').attr('rx', btnPanelR).attr('ry', btnPanelR);
+upSVGButtons.append('text').text('Карта').attr('transform', `translate(${lWidth * rel}, ${btnPanelBL})`).attr('cursor', 'pointer').on('click', () => mapClick());
+upSVGButtons.append('text').text('Центры').attr('transform', `translate(${lWidth * 0.5}, ${btnPanelBL})`).attr('cursor', 'pointer').on('click', () => centersClick());
+upSVGButtons.append('text').text('Люди').attr('transform', `translate(${lWidth * (1 - rel)}, ${btnPanelBL})`).attr('cursor', 'pointer').on('click', () => peopleClick());
+
+let currentMode = 0;
+
+function mapClick(long) {
+  if (currentMode == 2) return;
+  transitionDuration = long ? 5000 : 1000;
+  upSVGButtons.select('#selRect').transition().duration(transitionDuration).attr('x', (lWidth - btnPanelW) / 2);
+  drawRegions(lowSVGG);
+  drawBloodStationsSemaphores(upSVGG);
+  toggleSemaphores(upSVGG, 1);
+  webglEnabled = false;
+  webglCanvas.style.display = 'none';
+  currentMode = 0;
+}
+
+function centersClick(long) {
+  transitionDuration = long ? 5000 : 1000;
+  upSVGButtons.select('#selRect').transition().duration(currentMode == 2 ? 100 : transitionDuration).attr('x', (lWidth - btnPanelW) / 2 + btnPanelW / 3);
+  drawRegionsCircles(lowSVGG);
+  toggleSemaphores(upSVGG, 1);
+  drawBloodStationsCirclesSemaphores(upSVG);
+  webglCanvas.style.display = 'none';
+  webglEnabled = false;
+  currentMode = 1;
+}
+
+function peopleClick(long) {
+  if (currentMode == 0) return;
+  transitionDuration = long ? 5000 : 1000;
+  upSVGButtons.select('#selRect').transition().duration(100).attr('x', (lWidth - btnPanelW) / 2 + 2 * btnPanelW / 3);
+  toggleSemaphores(upSVGG, 0);
+  webglEnabled = true;
+  webglNeedsUpdate = true;
+  webglCanvas.style.display = 'block';
+  currentMode = 2;
+}
 
 const semaphoreBlood = [
   ['I', '+'],
@@ -51,7 +100,7 @@ const semaphoreBlood = [
 function updatePanel(stationNo) {
   const station = bloodStationsData[stationNo];
   const { semaphore, r1 } = station;
-  console.log('updatePanel');
+  rightPanel.style.display = 'block';
   let html = `<div style="font-size: 25px; margin-top: 0px; margin-bottom: 15px">Пункт сдачи крови №${stationNo}</div>`;
   semaphoreBlood.forEach(([num, resus]) => {
     const numNo = {'I': 0, 'II': 1, 'III': 2, 'IV': 3}[num];
